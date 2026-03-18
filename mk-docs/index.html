@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumentasi MK</title>
+
+<!-- ── External dependencies ── -->
+<script src="https://accounts.google.com/gsi/client"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- ── Application styles ── -->
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- =========== GLOBAL UI =========== -->
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div id="loading-text">Memuat...</div>
+</div>
+
+<div id="toast-wrap"></div>
+<div id="debug-panel"></div>
+
+<!-- =========== SIDEBAR =========== -->
+
+<div id="sidebar-overlay"></div>
+
+<div id="sidebar">
+  <div class="sb-top">
+    <span class="sb-logo">📚 MK Docs</span>
+    <button class="sb-close" id="sb-close-btn" title="Tutup">✕</button>
+  </div>
+
+  <div class="sb-user" id="sb-user-row" style="display:none">
+    <div class="sb-avatar" id="sb-avatar">👤</div>
+    <div style="flex:1;min-width:0">
+      <div class="sb-user-name" id="sb-user-name">—</div>
+      <div class="sb-user-email" id="sb-user-email">—</div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <button class="sb-nav-item active" id="sb-nav-home">
+      <span class="sb-nav-item-icon">🏠</span>Beranda
+    </button>
+    <button class="sb-nav-item" id="sb-nav-account">
+      <span class="sb-nav-item-icon">👤</span>Akun Saya
+    </button>
+    <button class="sb-nav-item" id="sb-nav-history">
+      <span class="sb-nav-item-icon">📋</span>Riwayat Pengeditan
+    </button>
+    <hr style="border:none;border-top:1px solid var(--border);margin:8px 14px">
+    <button class="sb-nav-item" id="sb-nav-logout" style="color:var(--danger)">
+      <span class="sb-nav-item-icon">↩️</span>Keluar
+    </button>
+  </nav>
+
+  <div class="sb-bc" id="sb-bc-wrap" style="display:none">
+    <div class="sb-bc-label">Lokasi saat ini</div>
+    <div id="sb-breadcrumb"></div>
+  </div>
+</div>
+
+<!-- =========== HEADER =========== -->
+
+<header id="app-header" style="display:none">
+  <button id="burger-btn" title="Menu" aria-label="Toggle menu">
+    <span class="burger-line"></span>
+    <span class="burger-line"></span>
+    <span class="burger-line"></span>
+  </button>
+  <span class="header-logo">📚 MK Docs</span>
+  <nav class="breadcrumb" id="breadcrumb"></nav>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm btn-icon" id="debug-toggle" title="Debug">🐛</button>
+    <div class="header-avatar" id="header-avatar-btn" title="Akun">👤</div>
+  </div>
+</header>
+
+<!-- =========== VIEWS =========== -->
+
+<!-- LOGIN -->
+<div id="view-login" class="view active">
+  <div class="login-card">
+    <div class="login-eyebrow">Dokumentasi</div>
+    <h1 class="login-title">Materi Kuliah</h1>
+    <p class="login-sub">Akses, telusuri, dan pelajari materi perkuliahan yang tersimpan di Google Drive.</p>
+    <button id="login-btn" class="btn btn-google">
+      <svg width="18" height="18" viewBox="0 0 18 18">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+        <path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Login dengan Google
+    </button>
+    <div class="login-footer">Data tersimpan di Google Drive pribadi Anda</div>
+  </div>
+</div>
+
+<!-- FOLDERS (Beranda Mata Kuliah) -->
+<div id="view-folders" class="view">
+  <div class="section-header">
+    <h2 class="section-title" id="folders-title">Mata Kuliah</h2>
+    <span class="section-badge" id="folders-count"></span>
+  </div>
+  <div class="mk-grid" id="folders-grid"></div>
+</div>
+
+<!-- FILES (Isi folder MK) -->
+<div id="view-files" class="view">
+  <div class="section-header">
+    <h2 class="section-title" id="files-title">Berkas</h2>
+    <span class="section-badge" id="files-count"></span>
+    <button class="btn btn-outline btn-sm" id="slideshow-btn" style="margin-left:auto">▶ Slideshow</button>
+  </div>
+  <div class="mk-grid" id="files-grid"></div>
+</div>
+
+<!-- EXPLANATION (Halaman penjelasan) -->
+<div id="view-explanation" class="view">
+  <div id="expl-header"></div>
+  <div class="blocks-render" id="blocks-render"></div>
+  <hr class="divider">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-outline" id="expl-edit-btn">✏️ Edit Penjelasan</button>
+    <button class="btn btn-ghost"   id="expl-back-btn">← Kembali</button>
+  </div>
+  <button class="expl-about-btn" id="expl-about-btn">📋 Riwayat Pengeditan</button>
+  <div class="expl-hist-section" id="expl-hist-section">
+    <div class="expl-hist-header">Riwayat Pengeditan</div>
+    <div id="expl-hist-list"></div>
+  </div>
+</div>
+
+<!-- ACCOUNT (Halaman akun) -->
+<div id="view-account" class="view">
+  <div class="acct-hero">
+    <div class="acct-avatar" id="acct-avatar">👤</div>
+    <div class="acct-name"  id="acct-name">Nama Pengguna</div>
+    <div class="acct-email" id="acct-email">email@example.com</div>
+  </div>
+  <div class="acct-card">
+    <div class="acct-row">
+      <span class="acct-row-ico">👤</span>
+      <div><div class="acct-row-label">Nama</div><div class="acct-row-val" id="acct-name-2">—</div></div>
+    </div>
+    <div class="acct-row">
+      <span class="acct-row-ico">✉️</span>
+      <div><div class="acct-row-label">Email</div><div class="acct-row-val" id="acct-email-2">—</div></div>
+    </div>
+    <div class="acct-row">
+      <span class="acct-row-ico">🕐</span>
+      <div><div class="acct-row-label">Login sejak</div><div class="acct-row-val" id="acct-login-time">—</div></div>
+    </div>
+  </div>
+  <div class="acct-card">
+    <div class="acct-stat-grid">
+      <div class="acct-stat"><div class="acct-stat-num" id="acct-stat-expl">0</div><div class="acct-stat-label">Penjelasan dibuat</div></div>
+      <div class="acct-stat"><div class="acct-stat-num" id="acct-stat-edit">0</div><div class="acct-stat-label">Total edit</div></div>
+      <div class="acct-stat"><div class="acct-stat-num" id="acct-stat-folder">0</div><div class="acct-stat-label">File terdaftar</div></div>
+    </div>
+  </div>
+  <button class="btn btn-danger-soft" id="acct-logout-btn" style="width:100%;justify-content:center">↩️ Keluar dari Akun</button>
+</div>
+
+<!-- HISTORY (Riwayat pengeditan global) -->
+<div id="view-history" class="view">
+  <div class="section-header">
+    <h2 class="section-title">Riwayat Pengeditan</h2>
+  </div>
+  <div class="hist-filter" id="hist-filter">
+    <button class="hist-filter-btn active" data-f="all">Semua</button>
+    <button class="hist-filter-btn"        data-f="create">Dibuat</button>
+    <button class="hist-filter-btn"        data-f="edit">Diedit</button>
+  </div>
+  <div id="hist-list"></div>
+</div>
+
+<!-- EDITOR (Editor blok penjelasan) -->
+<div id="view-editor" class="view">
+  <div class="editor-header">
+    <div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-.3px">Editor Penjelasan</h2>
+      <p style="font-size:13px;color:var(--text-2);margin-top:4px" id="editor-subtitle"></p>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button class="btn btn-outline btn-sm" id="editor-preview-btn">👁 Preview</button>
+      <button class="btn btn-primary"        id="editor-save-btn">💾 Simpan</button>
+    </div>
+  </div>
+  <input class="editor-title-input" id="editor-title-input" type="text" placeholder="Judul penjelasan...">
+  <div id="editor-blocks-wrap"></div>
+  <div class="add-zone" id="main-add-zone">+ Tambah Blok
+    <div class="add-menu" id="main-add-menu" style="display:none"></div>
+  </div>
+</div>
+
+<!-- =========== MODALS =========== -->
+
+<!-- Opsi file/gambar -->
+<div class="modal-backdrop" id="options-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="opt-title">Opsi<span class="modal-subtitle" id="opt-sub"></span></div>
+    <div id="opt-body"></div>
+  </div>
+</div>
+
+<!-- Bagikan -->
+<div class="modal-backdrop" id="share-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Bagikan</div>
+    <div class="share-link-row">
+      <input class="share-link-field" id="share-link-input" readonly>
+      <button class="btn btn-primary btn-sm" id="copy-link-btn">Salin</button>
+    </div>
+    <div class="share-grid" id="share-platforms"></div>
+  </div>
+</div>
+
+<!-- =========== OVERLAYS =========== -->
+
+<!-- Lightbox fullscreen -->
+<div id="lightbox">
+  <div class="lb-header">
+    <button class="lb-btn" id="lb-close">✕</button>
+    <span class="lb-title" id="lb-title"></span>
+  </div>
+  <div class="lb-body" id="lb-body">
+    <div id="lb-img-wrap"><img id="lb-img" src="" alt=""></div>
+  </div>
+  <div class="lb-controls">
+    <button class="lb-btn" id="lb-zoom-out">−</button>
+    <span class="lb-zoom-txt" id="lb-zoom-txt">100%</span>
+    <button class="lb-btn" id="lb-zoom-in">+</button>
+    <button class="lb-btn" id="lb-zoom-reset" title="Reset">⊡</button>
+  </div>
+</div>
+
+<!-- Slideshow fullscreen -->
+<div id="slideshow">
+  <div class="ss-header">
+    <button class="lb-btn" id="ss-close">✕</button>
+    <span class="ss-title" id="ss-title"></span>
+    <span class="ss-counter" id="ss-counter"></span>
+  </div>
+  <div class="ss-body" id="ss-body">
+    <button class="ss-arrow prev" id="ss-prev">‹</button>
+    <button class="ss-arrow next" id="ss-next">›</button>
+  </div>
+  <div class="ss-footer">
+    <div class="ss-dots" id="ss-dots"></div>
+    <button class="ss-opt-btn" id="ss-options-btn">⋯ Opsi</button>
+  </div>
+</div>
+
+<!-- =========== SCRIPTS =========== -->
+<!--
+  URUTAN PENTING: setiap file bergantung pada yang di atasnya.
+  config → state → utils → auth → api → database →
+  views → folders → lightbox → slideshow → explanation → share → user → main
+-->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/database.js"></script>
+<script src="js/views.js"></script>
+<script src="js/folders.js"></script>
+<script src="js/lightbox.js"></script>
+<script src="js/slideshow.js"></script>
+<script src="js/explanation.js"></script>
+<script src="js/share.js"></script>
+<script src="js/user.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
